@@ -5,12 +5,9 @@
     , board = {}
     , pins = []
     , pin_count = 0;
-
-  // check if overlay is already open
-  if ($('#pboverlay').length > 0) return false;
   
   // make sure user is logged in and on profile page
-  if (location.hostname.match(/pinterest.com$/) && $('.usernameLink').length > 0) {
+  if (location.hostname.match(/pinterest.com$/) && $ && $('.usernameLink').length > 0) {
     if ($('.boardLinkWrapper').length > 0) {
       // already on profile page
       start();
@@ -34,6 +31,10 @@
   
   // show overlay
   function start(selected_board) {
+  
+    // check if overlay is already open
+    if ($('#pboverlay').length > 0) return false;
+  
     // start at top of page
     window.scrollTo(0,0);
     
@@ -52,7 +53,7 @@
 <form class="standardForm">\
   <h1>Choose a board to export</h1>\
   <p class="controls">\
-    <select></select>\
+    <select><option> - All public pins - </select>\
     <button class="Button btn rounded primary">\
       <span class="buttonText">Export</span>\
     </button>\
