@@ -1,6 +1,4 @@
-# Pinback
-
-## [pinback.it](http://www.pinback.it)
+# [Pinback](http://www.pinback.it)
 
 ### The backup and export tool Pinterest forgot
 
