@@ -53,7 +53,7 @@
 <form class="standardForm">\
   <h1>Choose a board to export</h1>\
   <p class="controls">\
-    <select><option> - All public pins - </select>\
+    <select></select>\
     <button class="Button btn rounded primary">\
       <span class="buttonText">Export</span>\
     </button>\
