@@ -1,10 +1,12 @@
-(function() {
+(function(){
 
   var version = '0.1'
     , boards = {}
     , board = {}
     , pins = []
-    , pin_count = 0;
+    , pin_count = 0
+    , delay = 1000
+    , timer;
   
   // make sure user is logged in and on profile page
   if (location.hostname.match(/pinterest.com$/) && $ && $('.usernameLink').length > 0) {
@@ -148,14 +150,15 @@
       
       // scroll page to find more pins
       var next = (typeof(r.options.bookmarks) !== "undefined") ? r.options.bookmarks[0] : null;
+      if (timer) clearTimeout(timer);
       if (pin_count >= board.pin_count || next == '-end-') {
         // found the end
         if (pin_count > 0) done();
       } else {
         // keep going
-        setTimeout(function() {
-          $("html, body").animate({ scrollTop: document.body.scrollHeight }, 1000);
-        }, 1000);
+        timer = setTimeout(function() {
+          $("html, body").animate({ scrollTop: document.body.scrollHeight }, delay);
+        }, delay);
       }
     }
   }
