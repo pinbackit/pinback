@@ -1,6 +1,6 @@
 (function(){
 
-  var version = '0.2'
+  var version = '0.3'
     , boards = {}
     , board = {}
     , selected_board
@@ -10,28 +10,12 @@
     , timer;
 
   // make sure user is logged in and on profile page
-  if (location.hostname.match(/pinterest.com$/) && document.querySelector('.usernameLink')) {
-    if (document.querySelector('.boardLinkWrapper')) {
-      // already on profile page
-      start();
-    } else {
-      // send to profile page
-      var profile_link = document.querySelector('.profileSource, .BoardCount, .usernameLink');
-      selected_board = location.href;
-      document.addEventListener('DOMNodeInserted', listenForProfile);
-      profile_link.click();
-    }
+  if (location.hostname.match(/pinterest.com$/) && document.querySelector('.profileBoardsFeed')) {
+    // already on profile page
+    start();
   } else {
     alert('Log in and visit your profile to start (pinterest.com/username)');
     return false;
-  }
-
-  // wait for profile to load
-  function listenForProfile() {
-    if (document.querySelector('.boardLinkWrapper')) {
-      document.removeEventListener('DOMNodeInserted', listenForProfile);
-      start();
-    }
   }
 
   // show overlay
@@ -79,8 +63,8 @@
     option.dataset.name = 'all public pins';
     select.add(option);
 
-    Array.prototype.forEach.call(document.querySelectorAll('.boardLinkWrapper'), function(el, i) {
-      var name = el.querySelector('.name').innerText;
+    Array.prototype.forEach.call(document.querySelectorAll('.cardWrapper a'), function(el, i) {
+      var name = el.innerText.trim().split('\n')[0]; // first line of text
       var option = document.createElement('option');
       option.text = name;
       option.value = el.getAttribute('href');
@@ -93,9 +77,13 @@
       var selected = select.querySelector('option:checked');
       var name = selected.dataset.name;
 
-      var link = document.querySelector('a[href="'+selected.value+'"]');
-      link.href = selected.value+'?'+Date.now();
-      link.click();
+      if (select.selectedIndex == 0) {
+        document.querySelectorAll('.tabItem')[1].click()
+      } else {
+        var link = document.querySelector('a[href="'+selected.value+'"]');
+        link.href = selected.value+'?'+Date.now();
+        link.click();
+      }
 
       status('Exporting ' + name + '...');
       document.querySelector('#pboverlay .controls').innerHTML = '<meter min="0" max="100"></meter>';
@@ -110,6 +98,14 @@
     };
 
     // watch for ajax
+    XMLHttpRequest.prototype.open = (function(orig){
+      return function(){
+        // always retrieve first page
+        if (pin_count == 0) arguments[1] = arguments[1].replace('-end-','')
+        return orig.apply(this, arguments);
+      };
+    })(XMLHttpRequest.prototype.open);
+
     XMLHttpRequest.prototype.send = (function(orig){
       return function(){
 
@@ -136,6 +132,8 @@
 
   // parse incoming ajax responses
   function parse_resource(r, data) {
+    if (pin_count >= board.pin_count) return;
+
     if (r.name == 'UserResource' || r.name == 'BoardResource') {
       board = data;
       pins = [];
@@ -191,8 +189,13 @@
   }
 
   function progress(a, b) {
-    status('Exporting ' + a + " of " + b + '...');
-    document.querySelector('#pboverlay meter').value = (a/b)*100;
+    if (b) {
+      status('Exporting ' + a + " of " + b + '...');
+      document.querySelector('#pboverlay meter').value = (a/b)*100;
+    } else {
+      status('Exporting ' + a + '...');
+      document.querySelector('#pboverlay meter').value = a*100;
+    }
   }
 
   function privacy(p) {
@@ -223,7 +226,7 @@
 
       // pins
       b.pins.forEach(function(p, i) {
-        data += '<DT><A HREF="'+(p.link||p.url)+'" GUID="'+p.id+'" ORIGLINK="'+p.url+'" IMAGE="'+p.image+'" COLOR="'+p.color+'" AUTHOR="'+p.pinner+'" PRIVATE="'+privacy(p.privacy)+'" ADD_DATE="'+p.date+'" LONGITUDE="'+(p.longitude||'')+'" LATITUDE="'+(p.latitude||'')+'">'+escapeHtml(p.description)+'</A>\n';
+        data += '<DT><A HREF="'+(p.link||p.url)+'" GUID="'+p.id+'" ORIGLINK="'+p.url+'" IMAGE="'+p.image+'" COLOR="'+p.color+'" AUTHOR="'+p.pinner+'" PRIVATE="'+privacy(p.privacy)+'">'+escapeHtml(p.description)+'</A>\n';
       });
 
       // board footer
