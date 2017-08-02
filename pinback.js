@@ -1,6 +1,6 @@
 (function(){
 
-  var version = '0.3'
+  var version = '0.3.1'
     , boards = {}
     , board = {}
     , selected_board
@@ -10,7 +10,7 @@
     , timer;
 
   // make sure user is logged in and on profile page
-  if (location.hostname.match(/pinterest.com$/) && document.querySelector('.profileBoardsFeed')) {
+  if (location.hostname.match(/pinterest.[a-z.]{2,5}$/i) && document.querySelector('.profileBoardsFeed')) {
     // already on profile page
     start();
   } else {
