@@ -49,7 +49,7 @@
       <span class="buttonText">Export</span>\
     </button>\
   </p>\
-  <p><a href="http://www.pinback.it">Pinback v'+version+'</a></p>\
+  <p><a href="http://pinback.github.io">Pinback v'+version+'</a></p>\
 </form>';
 
     // add overlay to document
