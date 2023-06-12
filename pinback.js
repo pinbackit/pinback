@@ -8,7 +8,7 @@
     , username;
 
   // make sure user is on a profile page
-  if (match = location.href.match(/^https:\/\/www.pinterest.[a-z.]{2,5}\/([a-z0-9_]{1,30})/i)) {
+  if (match = location.href.match(/^https:\/\/www\.pinterest\..*?\/([a-z0-9_]{1,30})/i)) {
     username = match[1];
     getResource('Boards', {username: username, field_set_key: 'detailed'}, start);
   } else {
